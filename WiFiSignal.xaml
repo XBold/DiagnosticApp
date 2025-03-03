@@ -3,10 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DiagnosticApp.WiFiSignal"
              Title="WiFiSignal">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label
+            Grid.Row="0"
+            x:Name="lblWiFiSignal"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
-    </VerticalStackLayout>
+
+        <Label
+            Grid.Row="1"
+            x:Name="lblFrequency"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+
+        <Slider
+            Grid.Row="2"
+            x:Name="sldUpdateFrequency"
+            Margin="50,10"
+            ValueChanged="SldUpdate" />
+    </Grid>
 </ContentPage>

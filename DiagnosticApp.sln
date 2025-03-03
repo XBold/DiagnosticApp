@@ -5,6 +5,10 @@ VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiagnosticApp", "DiagnosticApp.csproj", "{421A9721-AC8A-444B-829D-02197AAE499F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAUI_Tools", "..\MAUI_Tools\MAUI_Tools.csproj", "{86900365-CFE6-26D5-8200-988E3910EBE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "..\Tools\Tools.csproj", "{BC7D322B-31FD-136E-D08E-ECAEA5480547}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,8 +17,17 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{421A9721-AC8A-444B-829D-02197AAE499F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{421A9721-AC8A-444B-829D-02197AAE499F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{421A9721-AC8A-444B-829D-02197AAE499F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{421A9721-AC8A-444B-829D-02197AAE499F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{421A9721-AC8A-444B-829D-02197AAE499F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86900365-CFE6-26D5-8200-988E3910EBE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86900365-CFE6-26D5-8200-988E3910EBE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86900365-CFE6-26D5-8200-988E3910EBE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86900365-CFE6-26D5-8200-988E3910EBE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC7D322B-31FD-136E-D08E-ECAEA5480547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC7D322B-31FD-136E-D08E-ECAEA5480547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC7D322B-31FD-136E-D08E-ECAEA5480547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC7D322B-31FD-136E-D08E-ECAEA5480547}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
