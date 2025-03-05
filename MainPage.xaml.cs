@@ -1,4 +1,5 @@
-﻿namespace DiagnosticApp
+﻿using static MAUI_Tools.PermissionHelper;
+namespace DiagnosticApp
 {
     public partial class MainPage : ContentPage
     {
@@ -6,6 +7,22 @@
 
         public MainPage()
         {
+            _ = CheckPermissionsStartup();
+        }
+
+        private async Task CheckPermissionsStartup()
+        {
+            Type[] permisions =
+            [
+                typeof(Permissions.LocationWhenInUse),
+                typeof(Permissions.NetworkState),
+                typeof(Permissions.StorageWrite)
+            ];
+            if (!await CheckPermissions(permisions))
+            {
+                Application.Current.Quit();
+            }
+            //Wait until permission is granted to initialize componenst
             InitializeComponent();
         }
 

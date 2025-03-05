@@ -32,7 +32,6 @@ public partial class WiFiSignal : ContentPage
 
     private async Task InitializeAsync()
     {
-        await AppendText("log.txt", "PIPPO");
         InitializeComponent();
 
         // Inizializza i ticks
