@@ -25,7 +25,14 @@ public partial class WiFiSignal : ContentPage
             //Fallback
             stepFrequency = 100;
         }
-        AppendText("log.txt", "PIPPO");
+
+        // Chiamata asincrona a AppendText
+        _ = InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
+    {
+        await AppendText("log.txt", "PIPPO");
         InitializeComponent();
 
         // Inizializza i ticks
@@ -37,7 +44,10 @@ public partial class WiFiSignal : ContentPage
         sldUpdateFrequency.Minimum = minFrequency;
         sldUpdateFrequency.Maximum = maxFrequency;
         sldUpdateFrequency.Value = minFrequency;
-        SldUpdate(sldUpdateFrequency, new ValueChangedEventArgs(0, minFrequency));
+
+        //// Usa await per chiamare SldUpdate
+        //await SldUpdate(sldUpdateFrequency, new ValueChangedEventArgs(0, minFrequency));
+
         _ = UpdateWifiData();
     }
 
@@ -47,7 +57,7 @@ public partial class WiFiSignal : ContentPage
         while (true)
         {
             frequency = (int)sldUpdateFrequency.Value;
-            var (signal, ip) = WiFiHelper.GetWiFiData();
+            var (signal, ip) = await WiFiHelper.GetWiFiData(); // Usa await
 
             await Dispatcher.DispatchAsync(() =>
             {
@@ -79,7 +89,7 @@ public partial class WiFiSignal : ContentPage
             await AnimateThumb();
         }
     }
-    
+
     private async Task AnimateThumb()
     {
         try
@@ -95,67 +105,11 @@ public partial class WiFiSignal : ContentPage
                 sldUpdateFrequency.TranslateTo(0, 0, 200, Easing.SpringOut)
             );
 
-            await lblFrequency.RippleEffect(Color.FromArgb("#4CAF50"), 500);
+            //await lblFrequency.RippleEffect(Color.FromArgb("#4CAF50"), 500);
         }
         catch (Exception ex)
         {
             Log($"Error while animating thumb\nError: {ex.Message}", Severity.CRITICAL);
         }
-    }
-}
-
-// Estensione per l'effetto ripple
-public static class AnimationExtensions
-{
-    public static async Task RippleEffect(this View element, Color rippleColor, uint duration)
-    {
-        try
-        {
-            if (element?.Parent is not Microsoft.Maui.Controls.Layout parentLayout) return;
-
-            var ripple = new Ellipse
-            {
-                BackgroundColor = rippleColor,
-                Opacity = 0.5,
-                Scale = 0,
-                AnchorX = 0.5,
-                AnchorY = 0.5,
-                WidthRequest = 50,
-                HeightRequest = 50
-            };
-
-            parentLayout.Children.Add(ripple);
-
-            var position = element.GetAbsolutePosition();
-            ripple.TranslationX = position.X + (element.Width / 2) - 25;
-            ripple.TranslationY = position.Y + (element.Height / 2) - 25;
-
-            await Task.WhenAll(
-                ripple.ScaleTo(3, duration, Easing.CubicOut),
-                ripple.FadeTo(0, duration)
-            );
-        }
-        finally
-        {
-            if (element?.Parent is Microsoft.Maui.Controls.Layout parentLayout && parentLayout.Children.LastOrDefault() is Ellipse ripple)
-            {
-                parentLayout.Children.Remove(ripple);
-            }
-        }
-    }
-
-    public static Point GetAbsolutePosition(this View element)
-    {
-        var position = element.Bounds.Location;
-        var parent = element.Parent as View;
-
-        while (parent != null)
-        {
-            position.X += parent.Bounds.X;
-            position.Y += parent.Bounds.Y;
-            parent = parent.Parent as View;
-        }
-
-        return position;
     }
 }
