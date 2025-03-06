@@ -1,9 +1,7 @@
 using MAUI_Tools;
 using System.Collections.ObjectModel;
-using Microsoft.Maui.Controls.Shapes;
 using Math = Tools.Math;
-using static Tools.Logger.Logger;
-using static MAUI_Tools.FilesHelper;
+using static MAUI_Tools.MAUILogger;
 using Tools.Logger;
 
 namespace DiagnosticApp;
@@ -12,7 +10,7 @@ public partial class WiFiSignal : ContentPage
 {
     readonly int minFrequency = 100;
     readonly int maxFrequency = 2000;
-    readonly int stepFrequency = 100;
+    readonly int stepFrequency = 450;
 
     public ObservableCollection<string> Ticks { get; } = new();
 
