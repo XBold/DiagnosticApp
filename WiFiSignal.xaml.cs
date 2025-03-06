@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using Microsoft.Maui.Controls.Shapes;
 using Math = Tools.Math;
 using static Tools.Logger.Logger;
-using Tools.Logger;
 using static MAUI_Tools.FilesHelper;
+using Tools.Logger;
 
 namespace DiagnosticApp;
 
