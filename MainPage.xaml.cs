@@ -1,4 +1,6 @@
 ﻿using static MAUI_Tools.PermissionHelper;
+using static MAUI_Tools.MAUILogger;
+using static Tools.Logger.Severity;
 namespace DiagnosticApp
 {
     public partial class MainPage : ContentPage
@@ -14,15 +16,16 @@ namespace DiagnosticApp
         {
             Type[] permisions =
             [
-                typeof(Permissions.LocationWhenInUse),
                 typeof(Permissions.NetworkState),
-                typeof(Permissions.StorageWrite)
+                typeof(Permissions.NearbyWifiDevices)
             ];
             if (!await CheckPermissions(permisions))
             {
                 Application.Current.Quit();
             }
-            //Wait until permission is granted to initialize componenst
+
+            Log("Permissions granted", INFO);
+            //Wait until permission is granted to initialize component
             InitializeComponent();
         }
 

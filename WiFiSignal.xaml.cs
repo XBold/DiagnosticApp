@@ -19,9 +19,9 @@ public partial class WiFiSignal : ContentPage
         bool IsValidStep = (maxFrequency - minFrequency) % stepFrequency == 0;
         if (!IsValidStep)
         {
-            Log("Invalid step frequency", Severity.FATAL_ERROR);
+            Log($"{stepFrequency} is not a valid frequency - Fallback to {minFrequency}", Severity.FATAL_ERROR);
             //Fallback
-            stepFrequency = 100;
+            stepFrequency = minFrequency;
         }
 
         // Chiamata asincrona a AppendText
@@ -54,7 +54,7 @@ public partial class WiFiSignal : ContentPage
         while (true)
         {
             frequency = (int)sldUpdateFrequency.Value;
-            var (signal, ip) = await WiFiHelper.GetWiFiData(); // Usa await
+            var (signal, ip) = await WiFiHelper.GetWiFiData(frequency); // Usa await
 
             await Dispatcher.DispatchAsync(() =>
             {
