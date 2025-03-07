@@ -17,7 +17,6 @@ namespace DiagnosticApp
             Type[] permisions =
             [
                 typeof(Permissions.NetworkState),
-                typeof(Permissions.LocationAlways),
                 typeof(Permissions.NearbyWifiDevices)
             ];
             if (!await CheckPermissions(permisions))
@@ -27,6 +26,7 @@ namespace DiagnosticApp
 
             //Wait until permission is granted to initialize component
             InitializeComponent();
+            Log("App started", INFO);
         }
 
         private void OnCounterClicked(object sender, EventArgs e)

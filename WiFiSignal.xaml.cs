@@ -8,9 +8,9 @@ namespace DiagnosticApp;
 
 public partial class WiFiSignal : ContentPage
 {
-    readonly int minFrequency = 500;
+    readonly int minFrequency = 200;
     readonly int maxFrequency = 2000;
-    int stepFrequency = 500;
+    int stepFrequency = 200;
     private CancellationTokenSource cts = new();
 
     public ObservableCollection<string> Ticks { get; } = new();
@@ -42,7 +42,6 @@ public partial class WiFiSignal : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        Log("Intercettato l'ingresso nella pagina", INFO);
         cts = new();
         OtherInizializations();
     }
@@ -50,9 +49,7 @@ public partial class WiFiSignal : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        // Quando la pagina scompare, annulla i task in corso
         cts.Cancel();
-        Log("Intercettato il leave della pagina: processi annullati", INFO);
     }
 
     private void CheckStepFrequency()
@@ -60,7 +57,7 @@ public partial class WiFiSignal : ContentPage
         bool IsValidStep = (maxFrequency - minFrequency) % stepFrequency == 0;
         if (!IsValidStep)
         {
-            Log($"{stepFrequency} is not a valid frequency - Fallback to {minFrequency}", FATAL_ERROR);
+            Log($"{stepFrequency} is not a valid step frequency - Fallback to {minFrequency}", FATAL_ERROR);
             //Fallback
             stepFrequency = minFrequency;
         }
@@ -68,29 +65,38 @@ public partial class WiFiSignal : ContentPage
 
     private async Task UpdateWifiData(CancellationToken cancellationToken)
     {
-        int frequency;
+        int updateFrequency;
+        uint counter = 0;
         try
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                frequency = (int)sldUpdateFrequency.Value;
+                updateFrequency = (int)sldUpdateFrequency.Value;
                 WiFiHelper wiFiHelper = new();
-                string signal = wiFiHelper.GetRSSI().ToString();
-                string ip = wiFiHelper.GetIPAddress();
-                lblWiFiSignal.Text = $"IP: {ip}\nSegnale: {signal}%";
-                Log($"RSSI: {signal}", INFO);
+                string text = $"IP: {wiFiHelper.GetIPAddress()}";
+                text += $"\nRSSI: {wiFiHelper.GetRSSI()} dBm";
+                text += $"\nRSSI percentage: {wiFiHelper.GetRSSIPerc()}%";
+                text += $"\nFrequency: {wiFiHelper.GetFrequency()} MHz";
+                text += $"\nBand: {wiFiHelper.GetBand()}";
+                text += $"\nWiFi Standard: {wiFiHelper.GetWiFiStandard()}";
+                text += $"\nSSID: {wiFiHelper.GetSSID()}";
+                lblWiFiSignal.Text = text;
+                lblWiFiSignal.Text += $"\nCounter: {counter++}";
+
+
+                Log(text.Replace(Environment.NewLine, " - "), INFO, filePathAndName: "WiFiSignal.txt");
 
                 // Usa il token anche nel delay per poter interrompere il task
-                await Task.Delay(frequency, cancellationToken);
+                await Task.Delay(updateFrequency, cancellationToken);
             }
         }
         catch (TaskCanceledException)
         {
-            Log("UpdateWifiData annullato", INFO);
+            LogConsole("UpdateWiFiData cancelled correctly", INFO);
         }
         catch (Exception ex)
         {
-            Log($"Errore in UpdateWifiData: {ex.Message}", CRITICAL);
+            Log($"Error on UpdateWifiData: {ex.Message}", CRITICAL);
         }
     }
 
