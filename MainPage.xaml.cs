@@ -24,7 +24,6 @@ namespace DiagnosticApp
                 Application.Current.Quit();
             }
 
-            Log("Permissions granted", INFO);
             //Wait until permission is granted to initialize component
             InitializeComponent();
         }
