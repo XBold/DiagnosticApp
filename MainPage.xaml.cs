@@ -17,6 +17,7 @@ namespace DiagnosticApp
             Type[] permisions =
             [
                 typeof(Permissions.NetworkState),
+                typeof(Permissions.LocationAlways),
                 typeof(Permissions.NearbyWifiDevices)
             ];
             if (!await CheckPermissions(permisions))

@@ -2,36 +2,27 @@ using MAUI_Tools;
 using System.Collections.ObjectModel;
 using Math = Tools.Math;
 using static MAUI_Tools.MAUILogger;
-using Tools.Logger;
+using static Tools.Logger.Severity;
 
 namespace DiagnosticApp;
 
 public partial class WiFiSignal : ContentPage
 {
-    readonly int minFrequency = 100;
+    readonly int minFrequency = 500;
     readonly int maxFrequency = 2000;
-    readonly int stepFrequency = 450;
+    int stepFrequency = 500;
+    private CancellationTokenSource cts = new();
 
     public ObservableCollection<string> Ticks { get; } = new();
 
     public WiFiSignal()
     {
-        bool IsValidStep = (maxFrequency - minFrequency) % stepFrequency == 0;
-        if (!IsValidStep)
-        {
-            Log($"{stepFrequency} is not a valid frequency - Fallback to {minFrequency}", Severity.FATAL_ERROR);
-            //Fallback
-            stepFrequency = minFrequency;
-        }
-
-        // Chiamata asincrona a AppendText
-        _ = InitializeAsync();
+        InitializeComponent();
     }
 
-    private async Task InitializeAsync()
+    private void OtherInizializations()
     {
-        InitializeComponent();
-
+        CheckStepFrequency();
         // Inizializza i ticks
         for (int i = minFrequency; i <= maxFrequency; i += stepFrequency)
         {
@@ -45,23 +36,61 @@ public partial class WiFiSignal : ContentPage
         //// Usa await per chiamare SldUpdate
         //await SldUpdate(sldUpdateFrequency, new ValueChangedEventArgs(0, minFrequency));
 
-        _ = UpdateWifiData();
+        _ = UpdateWifiData(cts.Token);
     }
 
-    private async Task UpdateWifiData()
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        Log("Intercettato l'ingresso nella pagina", INFO);
+        cts = new();
+        OtherInizializations();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        // Quando la pagina scompare, annulla i task in corso
+        cts.Cancel();
+        Log("Intercettato il leave della pagina: processi annullati", INFO);
+    }
+
+    private void CheckStepFrequency()
+    {
+        bool IsValidStep = (maxFrequency - minFrequency) % stepFrequency == 0;
+        if (!IsValidStep)
+        {
+            Log($"{stepFrequency} is not a valid frequency - Fallback to {minFrequency}", FATAL_ERROR);
+            //Fallback
+            stepFrequency = minFrequency;
+        }
+    }
+
+    private async Task UpdateWifiData(CancellationToken cancellationToken)
     {
         int frequency;
-        while (true)
+        try
         {
-            frequency = (int)sldUpdateFrequency.Value;
-            var (signal, ip) = await WiFiHelper.GetWiFiData(frequency); // Usa await
-
-            await Dispatcher.DispatchAsync(() =>
+            while (!cancellationToken.IsCancellationRequested)
             {
+                frequency = (int)sldUpdateFrequency.Value;
+                WiFiHelper wiFiHelper = new();
+                string signal = wiFiHelper.GetRSSI().ToString();
+                string ip = wiFiHelper.GetIPAddress();
                 lblWiFiSignal.Text = $"IP: {ip}\nSegnale: {signal}%";
-            });
+                Log($"RSSI: {signal}", INFO);
 
-            await Task.Delay(frequency);
+                // Usa il token anche nel delay per poter interrompere il task
+                await Task.Delay(frequency, cancellationToken);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            Log("UpdateWifiData annullato", INFO);
+        }
+        catch (Exception ex)
+        {
+            Log($"Errore in UpdateWifiData: {ex.Message}", CRITICAL);
         }
     }
 
@@ -106,7 +135,7 @@ public partial class WiFiSignal : ContentPage
         }
         catch (Exception ex)
         {
-            Log($"Error while animating thumb\nError: {ex.Message}", Severity.CRITICAL);
+            Log($"Error while animating thumb\nError: {ex.Message}", CRITICAL);
         }
     }
 }
