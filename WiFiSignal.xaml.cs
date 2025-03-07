@@ -8,16 +8,18 @@ namespace DiagnosticApp;
 
 public partial class WiFiSignal : ContentPage
 {
-    readonly int minFrequency = 200;
-    readonly int maxFrequency = 2000;
-    int stepFrequency = 200;
+    int minFrequency = 200;
+    int maxFrequency = 2000;
+    int stepFrequency = 100;
     private CancellationTokenSource cts = new();
+    double memoValue;
 
     public ObservableCollection<string> Ticks { get; } = new();
 
     public WiFiSignal()
     {
         InitializeComponent();
+        OtherInizializations();
     }
 
     private void OtherInizializations()
@@ -29,21 +31,22 @@ public partial class WiFiSignal : ContentPage
             Ticks.Add($"{i}");
         }
 
+        sldUpdateFrequency.ValueChanged -= SldUpdate;
         sldUpdateFrequency.Minimum = minFrequency;
         sldUpdateFrequency.Maximum = maxFrequency;
         sldUpdateFrequency.Value = minFrequency;
+        memoValue = sldUpdateFrequency.Value;
+        sldUpdateFrequency.ValueChanged += SldUpdate;
 
         //// Usa await per chiamare SldUpdate
         //await SldUpdate(sldUpdateFrequency, new ValueChangedEventArgs(0, minFrequency));
-
-        _ = UpdateWifiData(cts.Token);
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
         cts = new();
-        OtherInizializations();
+        _ = UpdateWifiData(cts.Token);
     }
 
     protected override void OnDisappearing()
@@ -54,12 +57,14 @@ public partial class WiFiSignal : ContentPage
 
     private void CheckStepFrequency()
     {
+        //Check that the order of min and max is correct
+        (minFrequency, maxFrequency) = Math.SortMinMax(minFrequency, maxFrequency);
+
         bool IsValidStep = (maxFrequency - minFrequency) % stepFrequency == 0;
         if (!IsValidStep)
         {
-            Log($"{stepFrequency} is not a valid step frequency - Fallback to {minFrequency}", FATAL_ERROR);
-            //Fallback
-            stepFrequency = minFrequency;
+            maxFrequency = ((maxFrequency / stepFrequency) * stepFrequency) + minFrequency;
+            Log($"{stepFrequency} is not a valid step frequency - Fallback changing max frequency to {maxFrequency}", CRITICAL);
         }
     }
 
@@ -104,23 +109,34 @@ public partial class WiFiSignal : ContentPage
     {
         if (sender is Slider slider)
         {
-            // Snap al valore più vicino
-            var snappedValue = Math.Round(e.NewValue / stepFrequency) * stepFrequency;
-            //DEBUG
+            if (Math.Abs(e.NewValue - memoValue) < double.Epsilon)
+                return;
+
+            var snappedValue = Math.Round((e.NewValue - minFrequency) / stepFrequency) * stepFrequency + minFrequency;
+            snappedValue = Math.Limit(minFrequency, snappedValue, maxFrequency);
+
+            if (Math.Abs(slider.Value - snappedValue) > double.Epsilon)
+            {
+                slider.ValueChanged -= SldUpdate;
+                slider.Value = snappedValue;
+                slider.ValueChanged += SldUpdate;
+            }
+
             if (snappedValue != e.NewValue)
             {
-                lblRawValue.Text = e.NewValue.ToString();
+                lblRawValue.Text = slider.Value.ToString();
             }
-            snappedValue = Math.Limit(minFrequency, snappedValue, maxFrequency);
-            slider.Value = snappedValue;
 
-            // Aggiorna label
-            lblFrequency.Text = $"Frequenza aggiornamento: {snappedValue} ms";
+            if (snappedValue != memoValue)
+            {
+                lblFrequency.Text = $"Frequenza aggiornamento: {snappedValue} ms";
+                await AnimateThumb();
+            }
 
-            // Animazioni
-            await AnimateThumb();
+            memoValue = snappedValue;
         }
     }
+
 
     private async Task AnimateThumb()
     {
