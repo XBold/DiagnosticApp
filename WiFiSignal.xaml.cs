@@ -78,13 +78,13 @@ public partial class WiFiSignal : ContentPage
             {
                 updateFrequency = (int)sldUpdateFrequency.Value;
                 WiFiHelper wiFiHelper = new();
-                string text = $"IP: {wiFiHelper.GetIPAddress()}";
-                text += $"\nRSSI: {wiFiHelper.GetRSSI()} dBm";
-                text += $"\nRSSI percentage: {wiFiHelper.GetRSSIPerc()}%";
-                text += $"\nFrequency: {wiFiHelper.GetFrequency()} MHz";
-                text += $"\nBand: {wiFiHelper.GetBand()}";
-                text += $"\nWiFi Standard: {wiFiHelper.GetWiFiStandard()}";
-                text += $"\nSSID: {wiFiHelper.GetSSID()}";
+                string text = $"IP: {WiFiHelper.GetIPAddress()}";
+                text += $"\nRSSI: {WiFiHelper.GetRSSI(swtOldSkd.IsToggled)} dBm";
+                text += $"\nRSSI percentage: {wiFiHelper.GetRSSIPerc(swtOldSkd.IsToggled)}%";
+                text += $"\nFrequency: {WiFiHelper.GetFrequency(swtOldSkd.IsToggled)} MHz";
+                text += $"\nBand: {WiFiHelper.GetBand(swtOldSkd.IsToggled)}";
+                text += $"\nWiFi Standard: {WiFiHelper.GetWiFiStandard(swtOldSkd.IsToggled)}";
+                text += $"\nSSID: {WiFiHelper.GetSSID(swtOldSkd.IsToggled)}";
                 lblWiFiSignal.Text = text;
                 lblWiFiSignal.Text += $"\nCounter: {counter++}";
 
