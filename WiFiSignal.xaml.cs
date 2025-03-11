@@ -38,6 +38,8 @@ public partial class WiFiSignal : ContentPage
         memoValue = sldUpdateFrequency.Value;
         sldUpdateFrequency.ValueChanged += SldUpdate;
 
+        lblFrequency.Text = $"Update frequency: {sldUpdateFrequency.Value} ms";
+
         //// Usa await per chiamare SldUpdate
         //await SldUpdate(sldUpdateFrequency, new ValueChangedEventArgs(0, minFrequency));
     }
@@ -122,14 +124,9 @@ public partial class WiFiSignal : ContentPage
                 slider.ValueChanged += SldUpdate;
             }
 
-            if (snappedValue != e.NewValue)
-            {
-                lblRawValue.Text = slider.Value.ToString();
-            }
-
             if (snappedValue != memoValue)
             {
-                lblFrequency.Text = $"Frequenza aggiornamento: {snappedValue} ms";
+                lblFrequency.Text = $"Update frequency: {snappedValue} ms";
                 await AnimateThumb();
             }
 
@@ -139,9 +136,9 @@ public partial class WiFiSignal : ContentPage
 
 
     private async Task AnimateThumb()
-    {
-        try
-        {
+                {
+                try
+                {
             // Animazione combinata
             await Task.WhenAll(
                 sldUpdateFrequency.ScaleTo(1.05, 100, Easing.SinIn),
@@ -154,9 +151,9 @@ public partial class WiFiSignal : ContentPage
             );
 
             //await lblFrequency.RippleEffect(Color.FromArgb("#4CAF50"), 500);
-        }
-        catch (Exception ex)
-        {
+                }
+                catch (Exception ex)
+                {
             Log($"Error while animating thumb\nError: {ex.Message}", CRITICAL);
         }
     }

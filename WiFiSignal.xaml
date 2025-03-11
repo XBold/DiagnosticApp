@@ -22,26 +22,20 @@
                FontSize="16"
                Margin="0,20"/>
 
-        <Label Grid.Row="1"
+        <Switch Grid.Row="1"
+                x:Name="swtOldSkd"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"/>
+
+        <Label Grid.Row="2"
                x:Name="lblFrequency"
                VerticalOptions="Center" 
                HorizontalOptions="Center"
                FontSize="18"
                FontAttributes="Bold"
                TextColor="#2196F3"/>
-
-        <Switch Grid.Row="2"
-                x:Name="swtOldSkd"/>
-
-        <Label Grid.Row="3"
-               x:Name="lblRawValue"
-               VerticalOptions="Center" 
-               HorizontalOptions="Center"
-               FontSize="18"
-               FontAttributes="Bold"
-               TextColor="#2196F3"/>
-
-        <Slider Grid.Row="4"
+        
+        <Slider Grid.Row="3"
             x:Name="sldUpdateFrequency"
             Minimum="100"
             Maximum="2000"
@@ -51,21 +45,5 @@
             Margin="20,0"
             HeightRequest="40"
             ValueChanged="SldUpdate"/>
-
-        <FlexLayout Grid.Row="5"
-                BindableLayout.ItemsSource="{Binding Ticks}"
-                Direction="Row"
-                JustifyContent="SpaceBetween"
-                Margin="20,10">
-            <BindableLayout.ItemTemplate>
-                <DataTemplate>
-                    <Label Text="{Binding}"
-                      FontSize="10"
-                      TextColor="#757575"
-                      WidthRequest="40"
-                      HorizontalTextAlignment="Center"/>
-                </DataTemplate>
-            </BindableLayout.ItemTemplate>
-        </FlexLayout>
     </Grid>
 </ContentPage>
