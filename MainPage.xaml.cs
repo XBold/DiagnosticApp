@@ -1,6 +1,8 @@
 ﻿using static MAUI_Tools.PermissionHelper;
 using static MAUI_Tools.MAUILogger;
 using static Tools.Logger.Severity;
+using Plugin.LocalNotification;
+
 namespace DiagnosticApp
 {
     public partial class MainPage : ContentPage
@@ -17,7 +19,8 @@ namespace DiagnosticApp
             Type[] permisions =
             [
                 typeof(Permissions.NetworkState),
-                typeof(Permissions.NearbyWifiDevices)
+                typeof(Permissions.NearbyWifiDevices),
+                typeof(Permissions.PostNotifications)
             ];
             if (!await CheckPermissions(permisions))
             {
@@ -28,7 +31,6 @@ namespace DiagnosticApp
             InitializeComponent();
             Log("App started", INFO);
         }
-
         private void OnCounterClicked(object sender, EventArgs e)
         {
             count++;
@@ -41,5 +43,4 @@ namespace DiagnosticApp
             SemanticScreenReader.Announce(CounterBtn.Text);
         }
     }
-
 }

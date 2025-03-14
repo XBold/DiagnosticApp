@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using Math = Tools.Math;
 using static MAUI_Tools.MAUILogger;
 using static Tools.Logger.Severity;
+using Plugin.LocalNotification;
 
 namespace DiagnosticApp;
 
@@ -55,6 +56,7 @@ public partial class WiFiSignal : ContentPage
     {
         base.OnDisappearing();
         cts.Cancel();
+        LocalNotificationCenter.Current.Cancel(NotificationIDs.WiFiSignal);
     }
 
     private void CheckStepFrequency()
@@ -93,8 +95,8 @@ public partial class WiFiSignal : ContentPage
 
                 Log(text.Replace(Environment.NewLine, " - "), INFO, filePathAndName: "WiFiSignal.txt");
 
-                // Usa il token anche nel delay per poter interrompere il task
                 await Task.Delay(updateFrequency, cancellationToken);
+                ShowNotification(text);
             }
         }
         catch (TaskCanceledException)
@@ -133,8 +135,7 @@ public partial class WiFiSignal : ContentPage
             memoValue = snappedValue;
         }
     }
-
-
+    
     private async Task AnimateThumb()
                 {
                 try
@@ -156,5 +157,18 @@ public partial class WiFiSignal : ContentPage
                 {
             Log($"Error while animating thumb\nError: {ex.Message}", CRITICAL);
         }
+    }
+
+    private async void ShowNotification(string description)
+    {
+        var notification = new NotificationRequest
+        {
+            NotificationId = NotificationIDs.WiFiSignal, // ID univoco per questa notifica
+            Title = "WiFi signal",
+            Description = description,
+            ReturningData = "Dati opzionali"
+        };
+
+        await LocalNotificationCenter.Current.Show(notification);
     }
 }
